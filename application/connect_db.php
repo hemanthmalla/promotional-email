@@ -134,7 +134,7 @@ class connect_db{
     }
     
     public function subscribe($email){
-        if($this->email_exists($email)){
+    
             $mysqli=$this->connect();
             
             $query="UPDATE `promotional_email_table` SET `is_subscribed`='1' WHERE `email_id`='$email'";
@@ -146,9 +146,7 @@ class connect_db{
                 return false;
             }
         $mysqli->close();
-        }else{
-            return false;
-        }
+        
     }
     function test(){
         echo $this->host;
