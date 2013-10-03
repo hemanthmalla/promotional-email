@@ -12,6 +12,7 @@
         // put your code here
         
         ?>
+        <h1>Add job</h1>
         <div id="form">
             <label name="html_page_link">Html Page link</label><br>
             <input type="text" name="html_page_link"><br>

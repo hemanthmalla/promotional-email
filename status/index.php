@@ -17,6 +17,7 @@ $status=$object->status();
         <title>Status</title>
     </head>
     <body>
+        <h1>Status</h1>
         <table border='1px'>
             <tr>
                 <td>id</td>

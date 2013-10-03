@@ -148,9 +148,103 @@ class connect_db{
         $mysqli->close();
         
     }
-    function test(){
-        echo $this->host;
+    public function Get_Unfinished_Jobs(){
+        $mysqli=  $this->connect();
+        
+        $query="SELECT id FROM `email_job_table` WHERE `is_job_completed`='0'";
+        $result=$mysqli->query($query);// or die($mysqli->error);
+        
+        $return_val=array('status'=>'1','error'=>'','result'=>array());
+        if($result){
+            $return_val['status']='0';
+        }else{
+            $return_val['error']='Some internal error';
+        }
+        while($row=$result->fetch_row()){
+            array_push($return_val['result'],$row[0]);
+        }
+        $mysqli->close();
+        return $return_val;
     }
+    
+    public function Get_job_details($job_id){
+        $mysqli= $this->connect();
+        
+        $query="SELECT * FROM `email_job_table` WHERE `id`='$job_id'";
+        $result=$mysqli->query($query);
+        
+        $return_val=array('status'=>'1','error'=>'','result'=>array());
+        if($result){
+            $return_val['status']='0';
+        }else{
+            $return_val['error']='Some internal error';
+        }
+        while($row=$result->fetch_assoc()){
+            array_push($return_val['result'],$row);
+        }
+        $mysqli->close();
+        return $return_val;
+    }
+    
+    public function retrieve_email($num_of_emails,$index){
+        $mysqli=$this->connect();
+        $query="SELECT email_id,id FROM `promotional_email_table` WHERE is_subscribed='1' and id>'$index' ORDER BY `id` ASC LIMIT 0,$num_of_emails ";
+        
+        $result=$mysqli->query($query);
+        $return_val=array('status'=>1,'error'=>'','result'=>array());
+        
+        if($result){
+            $return_val['status']='0';
+        }else{
+            $return_val['error']='Some internal error';
+        }
+        while($row=$result->fetch_assoc()){
+            array_push($return_val['result'],$row);
+        }
+        $mysqli->close();
+        return $return_val;
+    }
+    
+    public function update_email_log($job_id,$email_id){
+        
+        $mysqli=$this->connect();
+        $time=  time();
+        $query="INSERT INTO `email_sent_log` (email_id,job_id,email_sent_on)
+                VALUES ('$email_id','$job_id','$time')";
+        $result=$mysqli->query($query);
+        $mysqli->close();
+        if($result){
+            return true;
+        }
+        else return false;
+    }
+    public function update_email_job($job_id,$email_index,$job_completed){
+        $mysqli=$this->connect();
+        $query="UPDATE `email_job_table` SET `current_email_index`='$email_index',`is_job_completed`='$job_completed'
+                WHERE `id`='$job_id'";
+        
+        $result=$mysqli->query($query)or die($mysqli->error);
+        
+        $mysqli->close();
+        if($result){
+            return true;
+        }else return false;
+    }
+
+
+    public function get_last_email_id(){
+        $mysqli=$this->connect();
+        $query="SELECT * FROM `promotional_email_table` WHERE `is_subscribed`='1' ORDER BY `id` DESC LIMIT 1";
+        $result=$mysqli->query($query) or die($mysqli->error);
+        $return_val=array('status'=>1,'error'=>'');
+        while($row=$result->fetch_assoc()){
+            $return_val['status']=0;
+            $return_val['result']=$row['id'];
+        }
+        $mysqli->close();
+        return $return_val;
+    }
+            
 }
 
 ?>

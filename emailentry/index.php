@@ -15,8 +15,7 @@
         <h1>Email Entry</h1>
             
             <label name="emails">Emails</label><br>
-            <textarea name="emails" rows="10" cols="30">
-            </textarea>
+            <textarea name="emails" rows="10" cols="30"></textarea>
             <br>
             <button id='form-entry'>Submit</button>
          
@@ -34,6 +33,7 @@
 
 <script type="text/javascript">
     $(document).ready(function(){
+        $('textarea')
         $('#form-entry').click(function(){
             var return_val;
             var emails= $('textarea[name=emails]').val();
