@@ -16,6 +16,6 @@ if($_SERVER['SERVER_NAME']=='urbancleaning.in'){
     $host="urbancleaning.in";
     $user='urbancle_mobdeed';
     $password="Robo_76";
-    $db='urbacncle_promotional_mail';
+    $db='urbancle_promotional_mail';
 }
 ?>

@@ -1,5 +1,5 @@
 <?php
-require $_SERVER['DOCUMENT_ROOT'].'/mailer/include.php';
+//require $_SERVER['DOCUMENT_ROOT'].'/mailer/include.php';
 
 
 
@@ -10,7 +10,7 @@ class connect_db{
     private $db;
     
     public function __construct(){
-        require_once ROOT_DIR."/data.php";
+        require_once $_SERVER['DOCUMENT_ROOT']."/mailer/data.php";
         $this->host=$host;
         $this->user=$user;
         $this->password=$password;
@@ -210,7 +210,7 @@ class connect_db{
         $mysqli=$this->connect();
         $time=  time();
         $query="INSERT INTO `email_sent_log` (email_id,job_id,email_sent_on)
-                VALUES ('$email_id','$job_id','$time')";
+                VALUES ('$email_id','$job_id',now())";
         $result=$mysqli->query($query);
         $mysqli->close();
         if($result){
