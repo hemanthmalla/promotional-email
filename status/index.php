@@ -22,14 +22,15 @@ $status=$object->status();
             <tr>
                 <td>id</td>
                 <td>Details</td>
+                <td>status</td>
                 <td>Job added on</td>
-                <td>Html link</td>
                 <td>email no to send</td>
                 <td>email already sent</td>
                 <td>expired on</td>
                 <td>send to all</td>
                 <td>current email index</td>
                 <td>is job completed</td>
+                <td>Change state</td>
             </tr>    
         <?php
         foreach($status as $loop){
@@ -37,6 +38,7 @@ $status=$object->status();
             foreach($loop as $key=>$value){
                 echo '<td>'.$value.'</td>';
             }
+            echo "<td><a href='changestate.php?job_id=".$loop['id']."'>change state</a></td>";
             echo '</tr>';
         }
         ?>

@@ -14,8 +14,8 @@
         ?>
         <h1>Add job</h1>
         <div id="form">
-            <label name="html_page_link">Html Page link</label><br>
-            <input type="text" name="html_page_link"><br>
+            <!--<label name="html_page_link">Html Page link</label><br>
+            <input type="text" name="html_page_link"><br>-->
             <label name='details'>Details</label><br>
             <input type='text' name='details'><br>
             <label name='expires_on'>Expires On</label><br>
@@ -35,17 +35,19 @@
 <script type="text/javascript">
     $(document).ready(function(){
         $('#add-job').click(function(){
-            var html_link=$('input[name=html_page_link]').val();
+            //var html_link=$('input[name=html_page_link]').val();
             var details=$('input[name=details]').val();
             var expires_on=$('input[name=expires_on]').val();
             var num_of_emails=$('input[name=num_of_emails]').val();
             
-            $.post('process.php',{'html_page_link':html_link,'details':details,'expires_on':expires_on,'num_of_emails':num_of_emails},function(data){
+            $.post('process.php',{'details':details,'expires_on':expires_on,'num_of_emails':num_of_emails},function(data){
                 var data=JSON.parse(data);
-                if(data['status']!=0){
+                console.log(data);
+                if(data['status']==0){
                     $('#status').html('<p>'+data['error']+'</p>');
                 }else{
-                    $('#status').html('<p>Succecfully added</p>');
+                    $('#status').html('<p>Succecfully added.<br></p>');
+                    $('#status').append('<p>'+data['job_id']+' '+data['folder_stat']+'</p>');
                 }
             });
         });

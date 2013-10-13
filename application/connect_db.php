@@ -48,25 +48,27 @@ class connect_db{
         $mysqli->close();
 
     }
-    public function add_job($html_link,$details, $expiry, $num_of_emails){
+    public function add_job($details, $expiry, $num_of_emails){
         $mysqli=$this->connect();
         
+        $status=array('status'=>0,'error'=>'');
         $expiry= date('Y-m-d H:m:s',$expiry);
-        $query="INSERT INTO `email_job_table` (html_email_page_link,details_of_job,expired_on,email_number_to_send)";
-        $query.="VALUES('$html_link','$details','$expiry','$num_of_emails')";
+        $query="INSERT INTO `email_job_table` (details_of_job,expired_on,email_number_to_send)";
+        $query.="VALUES('$details','$expiry','$num_of_emails')";
         
-        $mysqli->query($query) or die($mysqli->error);
+        $result=$mysqli->query($query) or die($mysqli->error);
         
         $job_id;
         if($mysqli->affected_rows>0){
             //return true;
-            $query="SELECT id FROM `email_job_table` WHERE `html_email_page_link`='$html_link'";
-            $result=$mysqli->query($query) or die($mysqli->error);
-            if($row=$result->fetch_array()){
-                //print_r($row);
-                $job_id=$row[0];
+                $job_id=$mysqli->insert_id;
+                $ret=$this->CreateFolder($job_id);
+                $status['result']['job_id']=$job_id;
+                $status['status']=1;
+                $status['result']['folder_stat']=$ret['error'];
                // return $row[0];
-            }
+        }else{
+            $status['error']='db error';
         }
         
       // echo 'TO num email<br>';
@@ -85,9 +87,25 @@ class connect_db{
             $result=$mysqli->query($query)or die($mysqli->error);
             //return $job_id;
         }
-        
-        return $job_id;
         $mysqli->close();
+        return $status;
+        
+    }
+    public function CreateFolder($job_id){
+        $status=array('status'=>0,'error'=>'folder created with name as job id');
+        
+        $root=$_SERVER['DOCUMENT_ROOT'];
+        if(!file_exists($root.'/mailer/mail/'.$job_id)){
+            if(mkdir($root.'/mailer/mail/'.$job_id,0777,TRUE)){
+               $status['status']=1; 
+            }else{
+                $status['error']='File creation failed';
+            }
+        }else{
+            $status['error']='folder already exists';
+        }
+        return $status;
+        
     }
     
     public function status(){
@@ -151,7 +169,7 @@ class connect_db{
     public function Get_Unfinished_Jobs(){
         $mysqli=  $this->connect();
         
-        $query="SELECT id FROM `email_job_table` WHERE `is_job_completed`='0'";
+        $query="SELECT id FROM `email_job_table` WHERE `is_job_completed`='0' and `status`='1'";
         $result=$mysqli->query($query);// or die($mysqli->error);
         
         $return_val=array('status'=>'1','error'=>'','result'=>array());
@@ -243,6 +261,35 @@ class connect_db{
         }
         $mysqli->close();
         return $return_val;
+    }
+    
+    public function ChangeState($job_id,$state){
+        $mysqli=$this->connect();
+        if($state==0){
+            $state=1;
+        }else{
+            $state=0;
+        }
+        
+        $dir=$_SERVER['DOCUMENT_ROOT']."/mailer/mail/".$job_id."/index.html";
+        
+        $return_val=array('status'=>0,'error'=>'');
+        if(file_exists($dir)){
+            $query="UPDATE `email_job_table` SET `status`='$state' WHERE `id`='$job_id'";
+            $mysqli->query($query)or die($mysqli->error);
+           
+            if($mysqli->affected_rows>0){
+                $return_val['status']=1;
+            }else{
+                $return_val['error']="Internal error";
+            }
+            $mysqli->close();
+            return $return_val;
+        }else{
+            $return_val['error']="index.html not found in the directory.";
+            return $return_val;
+        }
+        
     }
             
 }

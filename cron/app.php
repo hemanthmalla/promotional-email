@@ -20,7 +20,7 @@ class Cron_helper{
             $job=$ret['result']['0'];
         }
         }
-        if(isempty($job)){
+        if(empty($job)){
             exit();
         }
         return $job;
@@ -30,7 +30,7 @@ class Cron_helper{
         // assuming email is saved in a file in the same server.
         //database has the link to the same file, relative to root path.
         
-        $filename = $_SERVER['DOCUMENT_ROOT']."/".$job['html_email_page_link'];
+        $filename = $_SERVER['DOCUMENT_ROOT']."/mailer/mail/".$job['id']."/index.html";
         $handle = fopen($filename, "r");
         $contents = fread($handle, filesize($filename));
         fclose($handle);
